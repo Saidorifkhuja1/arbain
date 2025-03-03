@@ -13,9 +13,13 @@ class HadisSerializer1(serializers.ModelSerializer):
         model = Hadis
         exclude = ['author']
 
-    # author = serializers.PrimaryKeyRelatedField(queryset=Muhaddis.objects.all(), required=False, write_only=True)
-    #
-    # class Meta:
-    #     model = Hadis
-    #     fields = '__all__'
 
+class HadisListSerializer(serializers.ModelSerializer):
+    related_hadis = serializers.SerializerMethodField()
+    class Meta:
+        model = Hadis
+        fields = ['uid', 'title', 'uzbek', 'arabic', 'description', 'author', 'related_hadis']
+    def get_related_hadis(self, obj):
+
+        related = Hadis.objects.filter(author=obj.author).exclude(uid=obj.uid)
+        return [{'uid': hadis.uid, 'title': hadis.title, 'uzbek': hadis.uzbek} for hadis in related]

@@ -7,4 +7,5 @@ urlpatterns = [
     path('detail_hadis/<uuid:uid>/', HadisRetrieveView.as_view()),
     path('update_hadis/<uuid:uid>/', HadisUpdateView.as_view()),
     path('delete_hadis/<uuid:uid>/', HadisDeleteView.as_view()),
+    path('hadis/search/', HadisSearchAPIView.as_view()),
 ]
