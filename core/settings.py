@@ -53,6 +53,7 @@ INSTALLED_APPS = [
     'news',
     'hadis',
     'muhaddis',
+    'video',
     'drf_yasg',
     "corsheaders",
     'rest_framework_simplejwt',
