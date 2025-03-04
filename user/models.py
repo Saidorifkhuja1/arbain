@@ -43,7 +43,7 @@ class User(AbstractBaseUser, PermissionsMixin):
     uid = models.UUIDField(default=uuid.uuid4, primary_key=True)
     name = models.CharField(max_length=250)
     last_name = models.CharField(max_length=250)
-    phone_number = models.CharField(validators=[PHONE_REGEX], max_length=21, unique=True, default="+998931112233")
+    phone_number = models.CharField(validators=[PHONE_REGEX], max_length=21, unique=True, default="+998931112233", blank=True, null=True)
     email = models.EmailField(unique=True)
     avatar = models.ImageField(upload_to='accounts/avatars/', blank=True, null=True)
     is_active = models.BooleanField(default=True)
@@ -51,8 +51,8 @@ class User(AbstractBaseUser, PermissionsMixin):
 
     objects = UserManager()
 
-    USERNAME_FIELD = 'phone_number'
-    REQUIRED_FIELDS = ['name', 'email', 'last_name']
+    USERNAME_FIELD = 'email'
+    REQUIRED_FIELDS = ['name', 'last_name']
 
     def __str__(self):
         return f'{self.name} {self.last_name}'
