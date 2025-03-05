@@ -10,7 +10,7 @@ class Hadis(models.Model):
     title = models.CharField(max_length=250)
     uzbek = models.TextField()
     arabic = models.TextField()
-    author = models.ForeignKey(Muhaddis, on_delete=models.CASCADE)
+    author = models.ForeignKey(Muhaddis, on_delete=models.CASCADE, null=True, blank=True)
     description = models.TextField()
 
 
