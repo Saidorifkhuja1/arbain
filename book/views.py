@@ -2,6 +2,8 @@ from aiohttp.web_response import Response
 from rest_framework import generics
 from rest_framework.permissions import IsAdminUser
 from rest_framework.parsers import MultiPartParser, FormParser
+
+from hadis.views import CustomPagination
 from .models import Book
 from drf_yasg.utils import swagger_auto_schema
 from .serializers import *
@@ -50,4 +52,5 @@ class BookDeleteView(generics.DestroyAPIView):
 class BookListView(generics.ListAPIView):
     queryset = Book.objects.all()
     serializer_class = BookSerializer
+    pagination_class = CustomPagination
     # permission_classes = [IsAdminUser]

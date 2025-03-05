@@ -9,9 +9,5 @@ urlpatterns = [
     path('delete_hadis/<uuid:uid>/', HadisDeleteView.as_view()),
     path('hadis/search/', HadisSearchAPIView.as_view()),
 
-    path('hadisdata/create/', HadisDataCreateView.as_view()),
-    path('hadisdata/update/<uuid:uid>/', HadisDataUpdateView.as_view()),
-    path('hadisdata/delete/<uuid:uid>/', HadisDataDeleteView.as_view()),
-    path('hadisdata/list/', HadisDataListView.as_view()),
-    path('hadisdata/<uuid:uid>/', HadisDataRetrieveView.as_view()),
+
 ]

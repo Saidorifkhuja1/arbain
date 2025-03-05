@@ -1,5 +1,7 @@
 from rest_framework import generics
 from rest_framework.permissions import IsAdminUser
+
+from hadis.views import CustomPagination
 from .models import *
 from .serializers import *
 from rest_framework.parsers import MultiPartParser, FormParser
@@ -36,4 +38,5 @@ class MuhaddisDeleteView(generics.DestroyAPIView):
 class MuhaddisListView(generics.ListAPIView):
     queryset = Muhaddis.objects.all()
     serializer_class = MuhaddisSerializer
+    pagination_class = CustomPagination
     # permission_classes = [IsAdminUser]

@@ -2,6 +2,17 @@ from rest_framework import generics, filters
 from rest_framework.permissions import IsAdminUser
 from .models import *
 from .serializers import *
+from rest_framework.pagination import PageNumberPagination
+
+
+class CustomPagination(PageNumberPagination):
+    page_size = 10
+    page_size_query_param = 'page_size'
+    max_page_size = 100
+
+
+
+
 
 class HadisCreateView(generics.CreateAPIView):
     queryset = Hadis.objects.all()
@@ -30,6 +41,7 @@ class HadisSearchAPIView(generics.ListAPIView):
 class HadisListView(generics.ListAPIView):
     queryset = Hadis.objects.all()
     serializer_class = HadisListSerializer
+    pagination_class = CustomPagination
 
 class HadisRetrieveView(generics.RetrieveAPIView):
     queryset = Hadis.objects.all()
@@ -38,29 +50,3 @@ class HadisRetrieveView(generics.RetrieveAPIView):
 
 
 
-
-class HadisDataCreateView(generics.CreateAPIView):
-    queryset = HadisData.objects.all()
-    serializer_class = HadisDataSerializer
-    permission_classes = [IsAdminUser]
-
-class HadisDataUpdateView(generics.UpdateAPIView):
-    queryset = HadisData.objects.all()
-    serializer_class = HadisDataSerializer
-    lookup_field = 'uid'
-    permission_classes = [IsAdminUser]
-
-class HadisDataDeleteView(generics.DestroyAPIView):
-    queryset = HadisData.objects.all()
-    serializer_class = HadisDataSerializer
-    lookup_field = 'uid'
-    permission_classes = [IsAdminUser]
-
-class HadisDataListView(generics.ListAPIView):
-    queryset = HadisData.objects.all()
-    serializer_class = HadisDataSerializer
-
-class HadisDataRetrieveView(generics.RetrieveAPIView):
-    queryset = HadisData.objects.all()
-    serializer_class = HadisDataSerializer
-    lookup_field = 'uid'
