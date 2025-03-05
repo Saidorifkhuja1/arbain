@@ -5,6 +5,14 @@ from django.db import models
 from muhaddis.models import Muhaddis
 
 
+
+class HadisData(models.Model):
+    uid = models.UUIDField(default=uuid.uuid4, editable=False, primary_key=True)
+    title = models.CharField(max_length=250)
+    text = models.TextField()
+
+
+
 class Hadis(models.Model):
     uid = models.UUIDField(default=uuid.uuid4, editable=False, primary_key=True)
     title = models.CharField(max_length=250)
@@ -12,6 +20,7 @@ class Hadis(models.Model):
     arabic = models.TextField()
     author = models.ForeignKey(Muhaddis, on_delete=models.CASCADE, null=True, blank=True)
     description = models.TextField()
+    data = models.ForeignKey(HadisData, on_delete=models.CASCADE)
 
 
 

@@ -1,25 +1,32 @@
 from rest_framework import serializers
-
 from muhaddis.models import Muhaddis
-from .models import Hadis
+from .models import Hadis, HadisData
 
-class HadisSerializer(serializers.ModelSerializer):
+class HadisDataSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = HadisData
+        fields = '__all__'
+
+# Serializer for create/update operations
+class HadisCreateSerializer(serializers.ModelSerializer):
+    # Here, 'data' is expected as a primary key (id)
     class Meta:
         model = Hadis
         fields = '__all__'
 
-class HadisSerializer1(serializers.ModelSerializer):
-    class Meta:
-        model = Hadis
-        exclude = ['author']
-
-
+# Serializer for listing/retrieving operations
 class HadisListSerializer(serializers.ModelSerializer):
-    related_hadis = serializers.SerializerMethodField()
+    # Nesting the HadisData details
+    data = HadisDataSerializer(read_only=True)
+    # For the author, you might show a string representation or nest more details if needed.
+    author = serializers.StringRelatedField()
+
     class Meta:
         model = Hadis
-        fields = ['uid', 'title', 'uzbek', 'arabic', 'description', 'author', 'related_hadis']
-    def get_related_hadis(self, obj):
+        fields = ['uid', 'title', 'uzbek', 'arabic', 'description', 'author', 'data']
 
-        related = Hadis.objects.filter(author=obj.author).exclude(uid=obj.uid)
-        return [{'uid': hadis.uid, 'title': hadis.title, 'uzbek': hadis.uzbek} for hadis in related]
+
+
+
+
+
