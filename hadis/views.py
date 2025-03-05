@@ -8,6 +8,7 @@ class HadisCreateView(generics.CreateAPIView):
     serializer_class = HadisCreateSerializer
     permission_classes = [IsAdminUser]
 
+
 class HadisUpdateView(generics.UpdateAPIView):
     queryset = Hadis.objects.all()
     serializer_class = HadisCreateSerializer
