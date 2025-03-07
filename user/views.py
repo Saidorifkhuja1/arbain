@@ -1,5 +1,6 @@
-
-from rest_framework_simplejwt.tokens import RefreshToken
+from django.contrib.auth.tokens import default_token_generator
+from django.utils.http import urlsafe_base64_decode
+from django.utils.encoding import force_str
 from rest_framework.response import Response
 from .serializers import *
 from rest_framework import generics, permissions, status
@@ -13,6 +14,7 @@ from drf_yasg.utils import swagger_auto_schema
 
 
 
+
 class UserRegistrationAPIView(generics.CreateAPIView):
     queryset = User.objects.all()
     serializer_class = UserRegistrationSerializer
@@ -22,18 +24,53 @@ class UserRegistrationAPIView(generics.CreateAPIView):
         if serializer.is_valid():
             user = serializer.save()
 
-
-            refresh = RefreshToken.for_user(user)
-            access_token = str(refresh.access_token)
-
             return Response({
                 "uid": user.uid,
-                "message": "User registered successfully!",
-                "refresh": str(refresh),
-                "access": access_token
+                "message": "User registered successfully! Please check your email for verification.",
             }, status=status.HTTP_201_CREATED)
 
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+
+
+class VerifyEmailAPIView(APIView):
+    def get(self, request, uidb64, token):
+        try:
+            uid = force_str(urlsafe_base64_decode(uidb64))
+            user = User.objects.get(pk=uid)
+
+            if default_token_generator.check_token(user, token):
+                user.is_verified = True
+                user.save()
+                return Response({"message": "Email verified successfully!"}, status=status.HTTP_200_OK)
+            else:
+                return Response({"error": "Invalid or expired token!"}, status=status.HTTP_400_BAD_REQUEST)
+
+        except (TypeError, ValueError, OverflowError, User.DoesNotExist):
+            return Response({"error": "Invalid request!"}, status=status.HTTP_400_BAD_REQUEST)
+
+# class UserRegistrationAPIView(generics.CreateAPIView):
+#     queryset = User.objects.all()
+#     serializer_class = UserRegistrationSerializer
+#
+#     def create(self, request, *args, **kwargs):
+#         serializer = self.get_serializer(data=request.data)
+#         if serializer.is_valid():
+#             user = serializer.save()
+#
+#
+#             refresh = RefreshToken.for_user(user)
+#             access_token = str(refresh.access_token)
+#
+#             return Response({
+#                 "uid": user.uid,
+#                 "message": "User registered successfully!",
+#                 "refresh": str(refresh),
+#                 "access": access_token
+#             }, status=status.HTTP_201_CREATED)
+#
+#         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
 

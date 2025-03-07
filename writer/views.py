@@ -39,3 +39,5 @@ class WriterListView(generics.ListAPIView):
     serializer_class = WriterSerializer
     pagination_class = CustomPagination
     # permission_classes = [IsAdminUser]
+
+

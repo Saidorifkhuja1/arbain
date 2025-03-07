@@ -1,6 +1,4 @@
 from rest_framework import serializers
-
-from writer.models import Writer
 from .models import Book
 
 class BookSerializer(serializers.ModelSerializer):
@@ -12,7 +10,10 @@ class BookSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 class BookUpdateSerializer(serializers.ModelSerializer):
-    author = serializers.PrimaryKeyRelatedField(queryset=Writer.objects.all(), required=False)
+    author = serializers.CharField(required=False)  # Update to CharField
+
     class Meta:
         model = Book
         fields = ['title', 'author', 'description', 'pdf', 'cover_image']
+
+

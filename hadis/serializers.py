@@ -7,7 +7,7 @@ class HadisCreateSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Hadis
-        fields = ['uid', 'number', 'title', 'uzbek', 'arabic', 'author', 'description', 'data']
+        fields = ['uid', 'number', 'title', 'uzbek', 'arabic', 'description', 'data']
 
     def create(self, validated_data):
 
@@ -17,8 +17,8 @@ class HadisCreateSerializer(serializers.ModelSerializer):
 class HadisListSerializer(serializers.ModelSerializer):
 
     data = serializers.ListField(child=serializers.JSONField(), read_only=True)
-    author = serializers.StringRelatedField()
+
 
     class Meta:
         model = Hadis
-        fields = ['uid', 'title', 'uzbek', 'arabic', 'description', 'author', 'data', 'number']
+        fields = ['uid', 'title', 'uzbek', 'arabic', 'description', 'data', 'number']

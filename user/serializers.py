@@ -1,11 +1,12 @@
 from rest_framework import serializers
-from django.utils import timezone
-from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from .models import User
+from django.core.mail import send_mail
+from django.conf import settings
+from .utils import generate_verification_link
 
 
 class UserRegistrationSerializer(serializers.ModelSerializer):
-    password = serializers.CharField(write_only=True, min_length=1)
+    password = serializers.CharField(write_only=True, min_length=6)
     avatar = serializers.ImageField(required=False, allow_null=True)
 
     class Meta:
@@ -17,8 +18,39 @@ class UserRegistrationSerializer(serializers.ModelSerializer):
         password = validated_data.pop('password')
         user = User.objects.create(**validated_data)
         user.set_password(password)
+        user.is_verified = False  # User must verify email before login
         user.save()
+
+        # ✅ Generate verification link using `reverse()`
+        verification_link = f"http://127.0.0.1:8000{generate_verification_link(user)}"
+
+        # ✅ Send email using Brevo
+        send_mail(
+            subject="Verify your email",
+            message=f"Click the link to verify your email: {verification_link}",
+            from_email=settings.DEFAULT_FROM_EMAIL,
+            recipient_list=[user.email],
+            fail_silently=False,
+        )
+
         return user
+
+
+# class UserRegistrationSerializer(serializers.ModelSerializer):
+#     password = serializers.CharField(write_only=True, min_length=1)
+#     avatar = serializers.ImageField(required=False, allow_null=True)
+#
+#     class Meta:
+#         model = User
+#         fields = ['uid', 'name', 'last_name', 'phone_number', 'email', 'avatar', 'password']
+#         read_only_fields = ['uid']
+#
+#     def create(self, validated_data):
+#         password = validated_data.pop('password')
+#         user = User.objects.create(**validated_data)
+#         user.set_password(password)
+#         user.save()
+#         return user
 
 
 

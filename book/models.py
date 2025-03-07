@@ -9,7 +9,7 @@ from writer.models import Writer
 class Book(models.Model):
     uid = models.UUIDField(default=uuid.uuid4, editable=False, primary_key=True)
     title = models.CharField(max_length=250)
-    author = models.ForeignKey(Writer, on_delete=models.CASCADE, blank=True, null=True)
+    author = models.CharField(max_length=500)
     description = models.TextField()
     pdf = models.FileField(upload_to='books/', validators=[FileExtensionValidator(['pdf'])], blank=True, null=True)
     cover_image = models.ImageField(upload_to='books/covers/', null=True, blank=True)
