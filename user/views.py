@@ -1,6 +1,3 @@
-from django.contrib.auth.tokens import default_token_generator
-from django.utils.http import urlsafe_base64_decode
-from django.utils.encoding import force_str
 from rest_framework.response import Response
 from .serializers import *
 from rest_framework import generics, permissions, status
@@ -11,66 +8,79 @@ from rest_framework.exceptions import NotFound, AuthenticationFailed
 from django.contrib.auth.hashers import make_password, check_password
 from rest_framework.views import APIView
 from drf_yasg.utils import swagger_auto_schema
+import random, json
+from django.core.cache import cache
 
 
 
+class SendVerificationCodeAPIView(APIView):
 
-class UserRegistrationAPIView(generics.CreateAPIView):
-    queryset = User.objects.all()
-    serializer_class = UserRegistrationSerializer
+    @swagger_auto_schema(request_body=SendVerificationCodeSerializer)
+    def post(self, request):
+        serializer = SendVerificationCodeSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        data = serializer.validated_data
 
-    def create(self, request, *args, **kwargs):
-        serializer = self.get_serializer(data=request.data)
-        if serializer.is_valid():
-            user = serializer.save()
-
-            return Response({
-                "uid": user.uid,
-                "message": "User registered successfully! Please check your email for verification.",
-            }, status=status.HTTP_201_CREATED)
-
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        email = data['email']
+        code = str(random.randint(100000, 999999))
 
 
+        cache_key = f"register-temp-{email}"
+        cache.set(cache_key, json.dumps({
+            "name": data['name'],
+            "last_name": data['last_name'],
+            "phone_number": data['phone_number'],
+            "password": data['password'],
+            "code": code
+        }), timeout=300)
 
 
-class VerifyEmailAPIView(APIView):
-    def get(self, request, uidb64, token):
-        try:
-            uid = force_str(urlsafe_base64_decode(uidb64))
-            user = User.objects.get(pk=uid)
+        message = f"Your verification code is: {code}"
+        email_msg = EmailMessage("Email Verification", message, to=[email])
+        email_msg.send(fail_silently=False)
 
-            if default_token_generator.check_token(user, token):
-                user.is_verified = True
-                user.save()
-                return Response({"message": "Email verified successfully!"}, status=status.HTTP_200_OK)
-            else:
-                return Response({"error": "Invalid or expired token!"}, status=status.HTTP_400_BAD_REQUEST)
+        return Response({"message": "Verification code sent to your email."}, status=status.HTTP_200_OK)
 
-        except (TypeError, ValueError, OverflowError, User.DoesNotExist):
-            return Response({"error": "Invalid request!"}, status=status.HTTP_400_BAD_REQUEST)
 
-# class UserRegistrationAPIView(generics.CreateAPIView):
-#     queryset = User.objects.all()
-#     serializer_class = UserRegistrationSerializer
-#
-#     def create(self, request, *args, **kwargs):
-#         serializer = self.get_serializer(data=request.data)
-#         if serializer.is_valid():
-#             user = serializer.save()
-#
-#
-#             refresh = RefreshToken.for_user(user)
-#             access_token = str(refresh.access_token)
-#
-#             return Response({
-#                 "uid": user.uid,
-#                 "message": "User registered successfully!",
-#                 "refresh": str(refresh),
-#                 "access": access_token
-#             }, status=status.HTTP_201_CREATED)
-#
-#         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+class VerifyCodeAPIView(APIView):
+    @swagger_auto_schema(request_body=VerifyCodeSerializer)
+    def post(self, request):
+        serializer = VerifyCodeSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+
+        email = serializer.validated_data['email']
+        code = serializer.validated_data['code']
+        cache_key = f"register-temp-{email}"
+
+        cached_data = cache.get(cache_key)
+        if not cached_data:
+            return Response({"error": "Verification code expired or not found."}, status=status.HTTP_400_BAD_REQUEST)
+
+        data = json.loads(cached_data)
+
+        if data['code'] != code:
+            return Response({"error": "Invalid verification code."}, status=status.HTTP_400_BAD_REQUEST)
+
+
+        if User.objects.filter(email=email).exists():
+            return Response({"error": "User with this email already exists."}, status=status.HTTP_400_BAD_REQUEST)
+
+
+        user = User.objects.create(
+            name=data['name'],
+            last_name=data['last_name'],
+            phone_number=data['phone_number'],
+            email=email,
+            is_verified=True
+        )
+        user.set_password(data['password'])
+        user.save()
+
+
+        cache.delete(cache_key)
+
+        return Response({"message": "User account created successfully."}, status=status.HTTP_201_CREATED)
 
 
 
@@ -103,7 +113,7 @@ class UpdateProfileView(generics.UpdateAPIView):
         return User.objects.filter(uid=user_id)
 
 
-class PasswordResetView(APIView):
+class PasswordUpdate(APIView):
     queryset = User.objects.all()
     serializer_class = PasswordResetSerializer
     permission_classes = [IsAuthenticated]
@@ -159,3 +169,58 @@ class DeleteProfileAPIView(generics.DestroyAPIView):
         self.perform_destroy(user)
 
         return Response({"message": "User successfully deleted"}, status=status.HTTP_204_NO_CONTENT)
+
+
+
+
+
+class PasswordResetRequestView(APIView):
+    @swagger_auto_schema(request_body=PasswordResetRequestSerializer)
+    def post(self, request):
+        serializer = PasswordResetRequestSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+
+        email = serializer.validated_data['email']
+        if not User.objects.filter(email=email).exists():
+            return Response({"error": "User with this email does not exist."}, status=status.HTTP_404_NOT_FOUND)
+
+        code = f"{random.randint(100000, 999999)}"
+        cache.set(f"reset-code-{email}", code, timeout=300)  # valid for 5 minutes
+
+        msg = f"Your password reset code is: {code}"
+        email_msg = EmailMessage("Reset your password", msg, to=[email])
+        email_msg.send()
+
+        return Response({"message": "Verification code sent to your email."})
+
+
+
+
+
+class PasswordResetConfirmView(APIView):
+    @swagger_auto_schema(request_body=PasswordResetConfirmSerializer)
+    def post(self, request):
+        serializer = PasswordResetConfirmSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+
+        email = serializer.validated_data['email']
+        code = serializer.validated_data['code']
+        new_password = serializer.validated_data['new_password']
+
+        cached_code = cache.get(f"reset-code-{email}")
+        if not cached_code:
+            return Response({"error": "Verification code expired or not found."}, status=status.HTTP_400_BAD_REQUEST)
+
+        if code != cached_code:
+            return Response({"error": "Invalid verification code."}, status=status.HTTP_400_BAD_REQUEST)
+
+        try:
+            user = User.objects.get(email=email)
+            user.set_password(new_password)
+            user.save()
+            cache.delete(f"reset-code-{email}")
+            return Response({"message": "Password has been reset successfully."})
+        except User.DoesNotExist:
+            return Response({"error": "User not found."}, status=status.HTTP_404_NOT_FOUND)
+
+

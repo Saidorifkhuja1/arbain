@@ -221,18 +221,45 @@ SIMPLE_JWT = {
     "SLIDING_TOKEN_REFRESH_SERIALIZER": "rest_framework_simplejwt.serializers.TokenRefreshSlidingSerializer",
 }
 
+CACHES = {
+    'default': {
+        'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',
+    }
+}
 
 
 
-EMAIL_SSL_CONTEXT = ssl.create_default_context(cafile=certifi.where())  # Use certifi's certificates
+EMAIL_SSL_CONTEXT = ssl.create_default_context(cafile=certifi.where())
 
 
 
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-EMAIL_HOST = 'smtp-relay.brevo.com'
+EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
-EMAIL_HOST_USER = '873a24001@smtp-brevo.com'
-EMAIL_HOST_PASSWORD = 'FTsDQfKRy0Z78qtL'
-# DEFAULT_FROM_EMAIL = 'your_email@yourdomain.com'
+EMAIL_HOST_USER = 'coderkuchkarov@gmail.com'
+EMAIL_HOST_PASSWORD = 'gotlmweqzpzjfvue'
 DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
+
+
+
+
+
+
+
+
+
+
+
+
+# EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+# EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+# EMAIL_HOST = 'smtp-relay.brevo.com'
+# EMAIL_PORT = 587
+# EMAIL_USE_TLS = True
+# EMAIL_HOST_USER = '873a24001@smtp-brevo.com'
+# EMAIL_HOST_PASSWORD = 'FTsDQfKRy0Z78qtL'
+# # DEFAULT_FROM_EMAIL = 'your_email@yourdomain.com'
+# DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
+#
+#

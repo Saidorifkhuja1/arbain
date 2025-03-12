@@ -3,54 +3,23 @@ from .models import User
 from django.core.mail import send_mail
 from django.conf import settings
 from .utils import generate_verification_link
+from django.core.mail import EmailMessage
 
 
-class UserRegistrationSerializer(serializers.ModelSerializer):
-    password = serializers.CharField(write_only=True, min_length=6)
-    avatar = serializers.ImageField(required=False, allow_null=True)
-
-    class Meta:
-        model = User
-        fields = ['uid', 'name', 'last_name', 'phone_number', 'email', 'avatar', 'password']
-        read_only_fields = ['uid']
-
-    def create(self, validated_data):
-        password = validated_data.pop('password')
-        user = User.objects.create(**validated_data)
-        user.set_password(password)
-        user.is_verified = False  # User must verify email before login
-        user.save()
-
-        # ✅ Generate verification link using `reverse()`
-        verification_link = f"http://127.0.0.1:8000{generate_verification_link(user)}"
-
-        # ✅ Send email using Brevo
-        send_mail(
-            subject="Verify your email",
-            message=f"Click the link to verify your email: {verification_link}",
-            from_email=settings.DEFAULT_FROM_EMAIL,
-            recipient_list=[user.email],
-            fail_silently=False,
-        )
-
-        return user
 
 
-# class UserRegistrationSerializer(serializers.ModelSerializer):
-#     password = serializers.CharField(write_only=True, min_length=1)
-#     avatar = serializers.ImageField(required=False, allow_null=True)
-#
-#     class Meta:
-#         model = User
-#         fields = ['uid', 'name', 'last_name', 'phone_number', 'email', 'avatar', 'password']
-#         read_only_fields = ['uid']
-#
-#     def create(self, validated_data):
-#         password = validated_data.pop('password')
-#         user = User.objects.create(**validated_data)
-#         user.set_password(password)
-#         user.save()
-#         return user
+class SendVerificationCodeSerializer(serializers.Serializer):
+    name = serializers.CharField(max_length=250)
+    last_name = serializers.CharField(max_length=250)
+    phone_number = serializers.CharField(max_length=20)
+    email = serializers.EmailField()
+    password = serializers.CharField(min_length=4, write_only=True)
+
+
+class VerifyCodeSerializer(serializers.Serializer):
+    email = serializers.EmailField()
+    code = serializers.CharField(min_length=6, max_length=6)
+
 
 
 
@@ -64,7 +33,7 @@ class UserUpdateSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = ['name', 'last_name', 'email', 'avatar']
-        read_only_fields = ['phone_number']  # phone_number cannot be updated
+        read_only_fields = ['phone_number']
 
     def update(self, instance, validated_data):
         instance.name = validated_data.get('name', instance.name)
@@ -101,6 +70,16 @@ class PasswordResetSerializer(serializers.Serializer):
 
 
 
+class PasswordResetRequestSerializer(serializers.Serializer):
+
+    email = serializers.EmailField()
+
+
+class PasswordResetConfirmSerializer(serializers.Serializer):
+
+    email = serializers.EmailField()
+    code = serializers.CharField(min_length=6, max_length=6)
+    new_password = serializers.CharField(min_length=6)
 
 
 
