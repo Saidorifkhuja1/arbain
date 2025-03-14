@@ -10,6 +10,7 @@ from rest_framework.views import APIView
 from drf_yasg.utils import swagger_auto_schema
 import random, json
 from django.core.cache import cache
+from rest_framework_simplejwt.tokens import RefreshToken
 
 
 
@@ -77,11 +78,15 @@ class VerifyCodeAPIView(APIView):
         user.set_password(data['password'])
         user.save()
 
-
+        refresh = RefreshToken.for_user(user)
         cache.delete(cache_key)
 
-        return Response({"message": "User account created successfully."}, status=status.HTTP_201_CREATED)
-
+        return Response({
+            "uid": user.uid,
+            "refresh": str(refresh),
+            "access": str(refresh.access_token),
+            "message": "User account created and logged in successfully."
+        }, status=status.HTTP_201_CREATED)
 
 
 class RetrieveProfileView(generics.RetrieveAPIView):
