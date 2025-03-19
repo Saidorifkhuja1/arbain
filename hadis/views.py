@@ -3,7 +3,7 @@ from rest_framework.permissions import IsAdminUser
 from .models import *
 from .serializers import *
 from rest_framework.pagination import PageNumberPagination
-
+from django.db.models import Q
 
 class CustomPagination(PageNumberPagination):
     page_size = 10
@@ -33,10 +33,22 @@ class HadisDeleteView(generics.DestroyAPIView):
     permission_classes = [IsAdminUser]
 
 class HadisSearchAPIView(generics.ListAPIView):
-    queryset = Hadis.objects.all()
     serializer_class = HadisListSerializer
-    filter_backends = [filters.SearchFilter]
-    search_fields = ['title', 'uzbek']
+
+    def get_queryset(self):
+        queryset = Hadis.objects.all()
+        search_query = self.request.query_params.get('search', '')
+
+        if search_query:
+            queryset = queryset.filter(
+                Q(title__icontains=search_query) |
+                Q(uzbek__icontains=search_query) |
+                Q(arabic__icontains=search_query) |
+                Q(description__icontains=search_query) |
+                Q(data__icontains=search_query)  # Works only if 'data' is list of strings or key-value pairs
+            )
+
+        return queryset
 
 class HadisListView(generics.ListAPIView):
     queryset = Hadis.objects.all()
