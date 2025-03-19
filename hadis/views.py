@@ -36,6 +36,7 @@ class HadisDeleteView(generics.DestroyAPIView):
 
 class HadisSearchAPIView(generics.ListAPIView):
     serializer_class = HadisListSerializer
+    pagination_class = CustomPagination
 
     @swagger_auto_schema(manual_parameters=[
         openapi.Parameter(
