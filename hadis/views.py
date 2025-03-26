@@ -1,19 +1,17 @@
 from rest_framework import generics, filters
 from rest_framework.permissions import IsAdminUser
-from .models import *
 from drf_yasg.utils import swagger_auto_schema
-from .serializers import *
-from rest_framework.pagination import PageNumberPagination
-from django.db.models import Q
 from drf_yasg import openapi
+from django.db.models import Q
+from rest_framework.pagination import PageNumberPagination
+from .models import Hadis
+from .serializers import HadisCreateSerializer, HadisListSerializer
+
 
 class CustomPagination(PageNumberPagination):
     page_size = 10
     page_size_query_param = 'page_size'
     max_page_size = 100
-
-
-
 
 
 class HadisCreateView(generics.CreateAPIView):
@@ -28,20 +26,22 @@ class HadisUpdateView(generics.UpdateAPIView):
     lookup_field = 'uid'
     permission_classes = [IsAdminUser]
 
+
 class HadisDeleteView(generics.DestroyAPIView):
     queryset = Hadis.objects.all()
     serializer_class = HadisCreateSerializer
     lookup_field = 'uid'
     permission_classes = [IsAdminUser]
 
+
 class HadisSearchAPIView(generics.ListAPIView):
     serializer_class = HadisListSerializer
-
+    pagination_class = CustomPagination
 
     @swagger_auto_schema(manual_parameters=[
         openapi.Parameter(
             'search', openapi.IN_QUERY,
-            description="Search term (applies to title, uzbek, arabic, description, data)",
+            description="Search term (applies to title, uzbek, arabic, description, data, type, author)",
             type=openapi.TYPE_STRING
         ),
         openapi.Parameter(
@@ -68,6 +68,8 @@ class HadisSearchAPIView(generics.ListAPIView):
                 Q(uzbek__icontains=search_query) |
                 Q(arabic__icontains=search_query) |
                 Q(description__icontains=search_query) |
+                Q(types__icontains=search_query) |
+                Q(author__icontains=search_query) |
                 Q(data__icontains=search_query)
             )
         return queryset
@@ -78,10 +80,10 @@ class HadisListView(generics.ListAPIView):
     serializer_class = HadisListSerializer
     pagination_class = CustomPagination
 
+
 class HadisRetrieveView(generics.RetrieveAPIView):
     queryset = Hadis.objects.all()
     serializer_class = HadisListSerializer
     lookup_field = 'uid'
-
 
 

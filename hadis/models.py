@@ -21,15 +21,10 @@ class Hadis(models.Model):
     title = models.CharField(max_length=250)
     uzbek = models.TextField(null=True, blank=True)
     arabic = models.TextField(null=True, blank=True)
-    type = models.CharField(max_length=50, null=True, blank=True)
+    types = models.CharField(max_length=50, null=True, blank=True)
     author = models.CharField(max_length=250, null=True, blank=True)
     description = models.TextField(null=True, blank=True)
     data = models.JSONField(default=list, blank=True, null=True)
-    # listt = models.ManyToManyField(Data)
-
-
-
-
 
     def __str__(self):
         return self.title
