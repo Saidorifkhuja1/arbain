@@ -36,7 +36,7 @@ class HadisDeleteView(generics.DestroyAPIView):
 
 class HadisSearchAPIView(generics.ListAPIView):
     serializer_class = HadisListSerializer
-    
+
 
     @swagger_auto_schema(manual_parameters=[
         openapi.Parameter(
