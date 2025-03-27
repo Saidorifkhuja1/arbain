@@ -12,10 +12,7 @@ import random, json
 from django.core.cache import cache
 from rest_framework_simplejwt.tokens import RefreshToken
 
-
-
 class SendVerificationCodeAPIView(APIView):
-
     @swagger_auto_schema(request_body=SendVerificationCodeSerializer)
     def post(self, request):
         serializer = SendVerificationCodeSerializer(data=request.data)
@@ -23,9 +20,15 @@ class SendVerificationCodeAPIView(APIView):
         data = serializer.validated_data
 
         email = data['email']
+
+        # Check if the email is already registered
+        if User.objects.filter(email=email).exists():
+            return Response({"error": "User with this email already exists."}, status=status.HTTP_400_BAD_REQUEST)
+
+        # Generate verification code
         code = str(random.randint(100000, 999999))
 
-
+        # Store user details in cache temporarily
         cache_key = f"register-temp-{email}"
         cache.set(cache_key, json.dumps({
             "name": data['name'],
@@ -35,12 +38,41 @@ class SendVerificationCodeAPIView(APIView):
             "code": code
         }), timeout=300)
 
-
+        # Send email with verification code
         message = f"Your verification code is: {code}"
         email_msg = EmailMessage("Email Verification", message, to=[email])
         email_msg.send(fail_silently=False)
 
         return Response({"message": "Verification code sent to your email."}, status=status.HTTP_200_OK)
+
+
+# class SendVerificationCodeAPIView(APIView):
+#
+#     @swagger_auto_schema(request_body=SendVerificationCodeSerializer)
+#     def post(self, request):
+#         serializer = SendVerificationCodeSerializer(data=request.data)
+#         serializer.is_valid(raise_exception=True)
+#         data = serializer.validated_data
+#
+#         email = data['email']
+#         code = str(random.randint(100000, 999999))
+#
+#
+#         cache_key = f"register-temp-{email}"
+#         cache.set(cache_key, json.dumps({
+#             "name": data['name'],
+#             "last_name": data['last_name'],
+#             "phone_number": data['phone_number'],
+#             "password": data['password'],
+#             "code": code
+#         }), timeout=300)
+#
+#
+#         message = f"Your verification code is: {code}"
+#         email_msg = EmailMessage("Email Verification", message, to=[email])
+#         email_msg.send(fail_silently=False)
+#
+#         return Response({"message": "Verification code sent to your email."}, status=status.HTTP_200_OK)
 
 
 
