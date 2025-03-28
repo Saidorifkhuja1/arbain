@@ -2,7 +2,7 @@ from rest_framework import generics, status
 from rest_framework.permissions import IsAdminUser
 from rest_framework.parsers import MultiPartParser, FormParser
 from .models import Book
-from .serializers import BookSerializer, BookUpdateSerializer
+from .serializers import *
 from hadis.views import CustomPagination
 
 class BookCreateView(generics.CreateAPIView):
@@ -35,8 +35,8 @@ class BookListView(generics.ListAPIView):
     pagination_class = CustomPagination
 
 
-class BookListView(generics.ListAPIView):
-    serializer_class = BookSerializer
+class BookListView1(generics.ListAPIView):
+    serializer_class = BookSerializer1
 
     def get_queryset(self):
         """

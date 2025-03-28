@@ -8,6 +8,6 @@ urlpatterns = [
     path('update_book/<uuid:uid>/', BookUpdateView.as_view()),
     path('delete_book/<uuid:uid>/', BookDeleteView.as_view()),
 
-    path('books/<str:book_type>/', BookListView.as_view()),
+    path('books/<str:book_type>/', BookListView1.as_view()),
 ]
 
