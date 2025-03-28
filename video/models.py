@@ -11,7 +11,7 @@ def validate_video_file_extension(value):
 class Videos(models.Model):
     uid = models.UUIDField(default=uuid.uuid4, editable=False, primary_key=True)
     title = models.CharField(max_length=250)
-    body = models.TextField()
+    body = models.TextField(null=True, blank=True)
     image = models.ImageField(upload_to='videos/', max_length=10000000)
     video = models.FileField(upload_to='videos/', validators=[validate_video_file_extension], max_length=10000000)
     uploaded_at = models.DateTimeField(default=timezone.now)

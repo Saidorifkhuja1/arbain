@@ -14,6 +14,12 @@ class BookUpdateSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Book
-        fields = ['title', 'author', 'description', 'pdf', 'cover_image']
+        fields = ['title', 'author', 'description', 'pdf', 'cover_image', 'type']
+
+class BookSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Book
+        fields = '__all__'
+
 
 

@@ -33,3 +33,15 @@ class BookListView(generics.ListAPIView):
     queryset = Book.objects.all()
     serializer_class = BookSerializer
     pagination_class = CustomPagination
+
+
+class BookListView(generics.ListAPIView):
+    serializer_class = BookSerializer
+
+    def get_queryset(self):
+        """
+        Retrieve books based on type query parameter.
+        """
+        book_type = self.kwargs.get('book_type')
+        return Book.objects.filter(type=book_type)
+
