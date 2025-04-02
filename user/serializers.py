@@ -1,10 +1,7 @@
 from rest_framework import serializers
-from .models import User
-from django.core.mail import send_mail
-from django.conf import settings
-from .utils import generate_verification_link
-from django.core.mail import EmailMessage
-
+from django.contrib.auth import authenticate
+from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
+from user.models import User
 
 
 
@@ -89,4 +86,24 @@ class PasswordResetConfirmSerializer(serializers.Serializer):
 
 
 
+class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
+    def validate(self, attrs):
+        email = attrs.get("email")
+        password = attrs.get("password")
 
+        # Check if email exists in DB
+        try:
+            user = User.objects.get(email=email)
+        except User.DoesNotExist:
+            raise serializers.ValidationError({"detail": "Email not registered"})
+
+        # Authenticate user
+        user = authenticate(email=email, password=password)
+        if user is None:
+            raise serializers.ValidationError({"detail": "Incorrect email or password"})
+
+        # Check if user is active
+        if not user.is_active:
+            raise serializers.ValidationError({"detail": "This account is inactive"})
+
+        return super().validate(attrs)
