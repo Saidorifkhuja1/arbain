@@ -44,7 +44,7 @@ class SendVerificationCodeAPIView(APIView):
         cache.set(cache_key, json.dumps({
             "name": data['name'],
             "last_name": data['last_name'],
-            "phone_number": data['phone_number'],
+            # "phone_number": data['phone_number'],
             "password": data['password'],
             "code": code
         }), timeout=300)
@@ -86,7 +86,7 @@ class VerifyCodeAPIView(APIView):
         user = User.objects.create(
             name=data['name'],
             last_name=data['last_name'],
-            phone_number=data['phone_number'],
+            # phone_number=data['phone_number'],
             email=email,
             is_verified=True
         )
