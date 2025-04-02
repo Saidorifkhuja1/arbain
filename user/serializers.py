@@ -1,9 +1,12 @@
 from rest_framework import serializers
-from django.contrib.auth import authenticate
-from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
+from .models import User
+from django.core.mail import send_mail
+from django.conf import settings
+from .utils import generate_verification_link
+from django.core.mail import EmailMessage
 from user.models import User
-
-
+from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
+from django.contrib.auth import authenticate
 
 class SendVerificationCodeSerializer(serializers.Serializer):
     name = serializers.CharField(max_length=250)
@@ -85,7 +88,6 @@ class PasswordResetConfirmSerializer(serializers.Serializer):
 
 
 
-
 class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
     def validate(self, attrs):
         email = attrs.get("email")
@@ -107,3 +109,4 @@ class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
             raise serializers.ValidationError({"detail": "This account is inactive"})
 
         return super().validate(attrs)
+
