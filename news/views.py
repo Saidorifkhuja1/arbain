@@ -2,7 +2,7 @@ from rest_framework import generics
 from rest_framework.permissions import IsAdminUser
 from rest_framework.parsers import MultiPartParser, FormParser
 
-from hadis.views import CustomPagination
+from core.paginations import CustomPageNumberPagination
 from .models import *
 from .serializers import *
 
@@ -50,5 +50,5 @@ class NewsDeleteView(generics.DestroyAPIView):
 class NewsListView(generics.ListAPIView):
     queryset = News.objects.all().order_by('-uploaded_at')
     serializer_class = NewsSerializer
-    pagination_class = CustomPagination
+    pagination_class = CustomPageNumberPagination
     # permission_classes = [IsAdminUser]

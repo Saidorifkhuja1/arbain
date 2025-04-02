@@ -1,9 +1,11 @@
 from rest_framework import generics, status
 from rest_framework.permissions import IsAdminUser
 from rest_framework.parsers import MultiPartParser, FormParser
+
+from core.paginations import CustomPageNumberPagination
 from .models import Book
 from .serializers import *
-from hadis.views import CustomPagination
+
 
 class BookCreateView(generics.CreateAPIView):
     queryset = Book.objects.all()
@@ -30,9 +32,9 @@ class BookDeleteView(generics.DestroyAPIView):
     permission_classes = [IsAdminUser]
 
 class BookListView(generics.ListAPIView):
-    queryset = Book.objects.all()
+    queryset = Book.objects.all().order_by('-uid')
     serializer_class = BookSerializer
-    pagination_class = CustomPagination
+    pagination_class = CustomPageNumberPagination
 
 
 class BookListView1(generics.ListAPIView):

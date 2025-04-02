@@ -4,14 +4,13 @@ from drf_yasg.utils import swagger_auto_schema
 from drf_yasg import openapi
 from django.db.models import Q
 from rest_framework.pagination import PageNumberPagination
+
+from core.paginations import CustomPageNumberPagination
 from .models import Hadis
 from .serializers import HadisCreateSerializer, HadisListSerializer
 
 
-class CustomPagination(PageNumberPagination):
-    page_size = 10
-    page_size_query_param = 'page_size'
-    max_page_size = 100
+
 
 
 class HadisCreateView(generics.CreateAPIView):
@@ -36,7 +35,7 @@ class HadisDeleteView(generics.DestroyAPIView):
 
 class HadisSearchAPIView(generics.ListAPIView):
     serializer_class = HadisListSerializer
-    pagination_class = CustomPagination
+    pagination_class = CustomPageNumberPagination
 
     @swagger_auto_schema(manual_parameters=[
         openapi.Parameter(
@@ -76,9 +75,9 @@ class HadisSearchAPIView(generics.ListAPIView):
 
 
 class HadisListView(generics.ListAPIView):
-    queryset = Hadis.objects.all()
+    queryset = Hadis.objects.all().order_by('-uid')
     serializer_class = HadisListSerializer
-    pagination_class = CustomPagination
+    pagination_class = CustomPageNumberPagination
 
 
 class HadisRetrieveView(generics.RetrieveAPIView):

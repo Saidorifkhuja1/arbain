@@ -1,7 +1,7 @@
 from rest_framework import generics
 from rest_framework.permissions import IsAdminUser
 
-from hadis.views import CustomPagination
+from core.paginations import CustomPageNumberPagination
 from .serializers import *
 from rest_framework.parsers import MultiPartParser, FormParser
 
@@ -35,9 +35,9 @@ class WriterDeleteView(generics.DestroyAPIView):
 
 
 class WriterListView(generics.ListAPIView):
-    queryset = Writer.objects.all()
+    queryset = Writer.objects.all().order_by('-uid')
     serializer_class = WriterSerializer
-    pagination_class = CustomPagination
+    pagination_class = CustomPageNumberPagination
     # permission_classes = [IsAdminUser]
 
 
