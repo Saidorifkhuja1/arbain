@@ -51,6 +51,8 @@ INSTALLED_APPS = [
     'user',
     'book',
     'writer',
+    'ckeditor',
+    'ckeditor_uploader',
     'news',
     'hadis',
     'muhaddis',
@@ -157,7 +159,7 @@ USE_TZ = True
 
 STATIC_URL = 'static/'
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
-
+CKEDITOR_UPLOAD_PATH = "uploads/"
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
@@ -175,6 +177,31 @@ REST_FRAMEWORK = {
         'rest_framework_simplejwt.authentication.JWTAuthentication',
     ),
 }
+
+
+
+
+CKEDITOR_CONFIGS = {
+    'default': {
+        'toolbar': 'full',
+        'height': 300,
+        'width': '100%',
+    },
+    'basic': {
+        'toolbar': [
+            ['Bold', 'Italic', 'Underline', 'Strike', 'Subscript', 'Superscript'],
+            ['NumberedList', 'BulletedList', 'Outdent', 'Indent', 'Blockquote'],
+            ['JustifyLeft', 'JustifyCenter', 'JustifyRight', 'JustifyBlock'],
+            ['Link', 'Unlink'],
+            ['Table', 'HorizontalRule', 'SpecialChar'],
+            ['Format', 'Font', 'FontSize', 'TextColor', 'BGColor'],
+            ['Source'],
+        ],
+        'height': 200,
+        'width': '100%',
+    },
+}
+
 
 
 from datetime import timedelta

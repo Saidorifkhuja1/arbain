@@ -4,26 +4,22 @@ from drf_yasg.utils import swagger_auto_schema
 from drf_yasg import openapi
 from django.db.models import Q
 from rest_framework.pagination import PageNumberPagination
-
 from core.paginations import CustomPageNumberPagination
 from .models import Hadis
 from .serializers import HadisCreateSerializer, HadisListSerializer
 
 
+# class HadisCreateView(generics.CreateAPIView):
+#     queryset = Hadis.objects.all()
+#     serializer_class = HadisCreateSerializer
+#     permission_classes = [IsAdminUser]
 
-
-
-class HadisCreateView(generics.CreateAPIView):
-    queryset = Hadis.objects.all()
-    serializer_class = HadisCreateSerializer
-    permission_classes = [IsAdminUser]
-
-
-class HadisUpdateView(generics.UpdateAPIView):
-    queryset = Hadis.objects.all()
-    serializer_class = HadisCreateSerializer
-    lookup_field = 'uid'
-    permission_classes = [IsAdminUser]
+#
+# class HadisUpdateView(generics.UpdateAPIView):
+#     queryset = Hadis.objects.all()
+#     serializer_class = HadisCreateSerializer
+#     lookup_field = 'uid'
+#     permission_classes = [IsAdminUser]
 
 
 class HadisDeleteView(generics.DestroyAPIView):
@@ -40,7 +36,7 @@ class HadisSearchAPIView(generics.ListAPIView):
     @swagger_auto_schema(manual_parameters=[
         openapi.Parameter(
             'search', openapi.IN_QUERY,
-            description="Search term (applies to title, uzbek, arabic, description, data, type, author)",
+            description="Search term (applies to title, uzbek, arabic, description, data items, type, author)",
             type=openapi.TYPE_STRING
         ),
         openapi.Parameter(
@@ -69,8 +65,10 @@ class HadisSearchAPIView(generics.ListAPIView):
                 Q(description__icontains=search_query) |
                 Q(types__icontains=search_query) |
                 Q(author__icontains=search_query) |
-                Q(data__icontains=search_query)
-            )
+                Q(data_items__title__icontains=search_query) |
+                Q(data_items__text__icontains=search_query)
+            ).distinct()
+
         return queryset
 
 
@@ -84,5 +82,4 @@ class HadisRetrieveView(generics.RetrieveAPIView):
     queryset = Hadis.objects.all()
     serializer_class = HadisListSerializer
     lookup_field = 'uid'
-
 
