@@ -188,19 +188,42 @@ REST_FRAMEWORK = {
 CKEDITOR_5_CONFIGS = {
     "default": {
         "toolbar": [
-            "heading", "|", "bold", "italic", "link", "|", "bulletedList", "numberedList", "blockQuote"
+            "heading", "|",
+            "bold", "italic", "underline", "strikethrough", "|",
+            "alignment", "lineHeight", "|",
+            "bulletedList", "numberedList", "blockQuote", "|",
+            "link", "undo", "redo"
         ],
         "language": "en",
+        "alignment": {
+            "options": ["left", "center", "right", "justify"]
+        },
+        "lineHeight": {
+            "options": [0.5, 1, 1.5, 2, 2.5, 3],
+            "supportAllValues": False
+        }
     },
     "extended": {
         "toolbar": [
-            "heading", "|", "bold", "italic", "link", "underline", "strikethrough", "|",
-            "bulletedList", "numberedList", "blockQuote", "code", "codeBlock", "|",
-            "insertTable", "imageUpload", "mediaEmbed", "undo", "redo"
+            "heading", "|",
+            "bold", "italic", "underline", "strikethrough", "|",
+            "alignment", "lineHeight", "|",
+            "bulletedList", "numberedList", "blockQuote", "|",
+            "code", "codeBlock", "|",
+            "insertTable", "imageUpload", "mediaEmbed", "|",
+            "link", "undo", "redo"
         ],
         "language": "en",
+        "alignment": {
+            "options": ["left", "center", "right", "justify"]
+        },
+        "lineHeight": {
+            "options": [0.5, 1, 1.5, 2, 2.5, 3],
+            "supportAllValues": False
+        }
     }
 }
+
 
 
 from datetime import timedelta
