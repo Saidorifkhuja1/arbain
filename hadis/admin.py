@@ -1,43 +1,34 @@
-# from django.contrib import admin
-# from .models import Hadis, Data
-#
-#
-# class DataInline(admin.StackedInline):
-#     model = Data
-#     extra = 1
-#
-#
-# @admin.register(Hadis)
-# class HadisAdmin(admin.ModelAdmin):
-#     list_display = ['title', 'number', 'author']
-#     list_filter = ['types', 'author']
-#     search_fields = ['title', 'description', 'uzbek', 'arabic']
-#     inlines = [DataInline]
 from django.contrib import admin
-from .models import Hadis, Data
-from ckeditor.widgets import CKEditorWidget
 from django import forms
+from .models import Hadis, Data
+from django_ckeditor_5.widgets import CKEditor5Widget
+
+
 
 class DataAdminForm(forms.ModelForm):
+    text = forms.CharField(widget=CKEditor5Widget(config_name='extended'))
+
     class Meta:
         model = Data
         fields = '__all__'
-        widgets = {
-            'text': CKEditorWidget(config_name='basic'),
-        }
+
+
 
 class DataInline(admin.StackedInline):
     model = Data
-    extra = 1
     form = DataAdminForm
+    extra = 1
+
 
 class HadisAdminForm(forms.ModelForm):
+    uzbek = forms.CharField(widget=CKEditor5Widget(config_name='extended'))
+    arabic = forms.CharField(widget=CKEditor5Widget(config_name='extended'))
+
     class Meta:
         model = Hadis
         fields = '__all__'
-        widgets = {
-            'uzbek': CKEditorWidget(config_name='default'),
-        }
+
+
 
 @admin.register(Hadis)
 class HadisAdmin(admin.ModelAdmin):

@@ -51,8 +51,8 @@ INSTALLED_APPS = [
     'user',
     'book',
     'writer',
-    'ckeditor',
-    'ckeditor_uploader',
+    'django_ckeditor_5',
+
     'news',
     'hadis',
     'muhaddis',
@@ -77,7 +77,7 @@ MIDDLEWARE = [
 
 AUTH_USER_MODEL = "user.User"
 ROOT_URLCONF = 'core.urls'
-CORS_ALLOW_ALL_ORIGINS = True
+
 
 TEMPLATES = [
     {
@@ -159,9 +159,13 @@ USE_TZ = True
 
 STATIC_URL = 'static/'
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
-CKEDITOR_UPLOAD_PATH = "uploads/"
+
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+
+CKEDITOR_5_UPLOAD_FILE_TYPES = ["jpg", "jpeg", "png", "gif", "pdf"]
+
+CKEDITOR_5_FILE_STORAGE = "django.core.files.storage.FileSystemStorage"
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
@@ -181,27 +185,22 @@ REST_FRAMEWORK = {
 
 
 
-CKEDITOR_CONFIGS = {
-    'default': {
-        'toolbar': 'full',
-        'height': 300,
-        'width': '100%',
-    },
-    'basic': {
-        'toolbar': [
-            ['Bold', 'Italic', 'Underline', 'Strike', 'Subscript', 'Superscript'],
-            ['NumberedList', 'BulletedList', 'Outdent', 'Indent', 'Blockquote'],
-            ['JustifyLeft', 'JustifyCenter', 'JustifyRight', 'JustifyBlock'],
-            ['Link', 'Unlink'],
-            ['Table', 'HorizontalRule', 'SpecialChar'],
-            ['Format', 'Font', 'FontSize', 'TextColor', 'BGColor'],
-            ['Source'],
+CKEDITOR_5_CONFIGS = {
+    "default": {
+        "toolbar": [
+            "heading", "|", "bold", "italic", "link", "|", "bulletedList", "numberedList", "blockQuote"
         ],
-        'height': 200,
-        'width': '100%',
+        "language": "en",
     },
+    "extended": {
+        "toolbar": [
+            "heading", "|", "bold", "italic", "link", "underline", "strikethrough", "|",
+            "bulletedList", "numberedList", "blockQuote", "code", "codeBlock", "|",
+            "insertTable", "imageUpload", "mediaEmbed", "undo", "redo"
+        ],
+        "language": "en",
+    }
 }
-
 
 
 from datetime import timedelta
