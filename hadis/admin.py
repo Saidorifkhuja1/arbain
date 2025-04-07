@@ -17,7 +17,7 @@ class DataAdminForm(forms.ModelForm):
 class DataInline(admin.StackedInline):
     model = Data
     form = DataAdminForm
-    extra = 1
+    extra = 0
 
 
 class HadisAdminForm(forms.ModelForm):
