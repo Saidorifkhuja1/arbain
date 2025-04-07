@@ -9,7 +9,7 @@ class Hadis(models.Model):
     number = models.CharField(max_length=300)
     title = models.CharField(max_length=250)
     uzbek = models.TextField()
-    arabic = CKEditor5Field()
+    arabic = models.TextField()
     types = models.CharField(max_length=50, null=True, blank=True)
     author = models.CharField(max_length=250, null=True, blank=True)
     description = models.TextField(null=True, blank=True)

@@ -22,7 +22,7 @@ class DataInline(admin.StackedInline):
 
 class HadisAdminForm(forms.ModelForm):
     uzbek = forms.CharField(widget=CKEditor5Widget(config_name='extended'))
-    arabic = forms.CharField(widget=CKEditor5Widget(config_name='extended'))
+    # arabic = forms.CharField(widget=CKEditor5Widget(config_name='extended'))
 
     class Meta:
         model = Hadis
@@ -35,6 +35,6 @@ class HadisAdmin(admin.ModelAdmin):
     form = HadisAdminForm
     list_display = ['title', 'number', 'author']
     list_filter = ['types', 'author']
-    search_fields = ['title', 'description', 'uzbek', 'arabic']
+    search_fields = ['title', 'description', 'uzbek']
     inlines = [DataInline]
 
