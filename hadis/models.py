@@ -1,7 +1,7 @@
 from django_ckeditor_5.fields import CKEditor5Field
 from django.db import models
 import uuid
-
+from django.utils import timezone
 
 
 class Hadis(models.Model):
@@ -13,6 +13,7 @@ class Hadis(models.Model):
     types = models.CharField(max_length=50, null=True, blank=True)
     author = models.CharField(max_length=250, null=True, blank=True)
     description = models.TextField(null=True, blank=True)
+    date = models.DateTimeField(default=timezone.now)
 
     def __str__(self):
         return self.title

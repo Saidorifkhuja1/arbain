@@ -73,7 +73,7 @@ class HadisSearchAPIView(generics.ListAPIView):
 
 
 class HadisListView(generics.ListAPIView):
-    queryset = Hadis.objects.all().order_by('-uid')
+    queryset = Hadis.objects.all().order_by('-date')
     serializer_class = HadisListSerializer
     pagination_class = CustomPageNumberPagination
 

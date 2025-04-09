@@ -27,7 +27,7 @@ class HadisCreateSerializer(serializers.ModelSerializer):
     def update(self, instance, validated_data):
         data_items_data = validated_data.pop('data_items', [])
 
-        # Update Hadis fields
+
         instance.number = validated_data.get('number', instance.number)
         instance.title = validated_data.get('title', instance.title)
         instance.uzbek = validated_data.get('uzbek', instance.uzbek)
@@ -37,12 +37,9 @@ class HadisCreateSerializer(serializers.ModelSerializer):
         instance.description = validated_data.get('description', instance.description)
         instance.save()
 
-        # Handle data items if provided
-        if data_items_data:
-            # Option 1: Replace all existing data items
-            # instance.data_items.all().delete()
 
-            # Option 2: Keep existing data items and add new ones
+        if data_items_data:
+
             for data_item in data_items_data:
                 Data.objects.create(hadis=instance, **data_item)
 
@@ -54,5 +51,5 @@ class HadisListSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Hadis
-        fields = ['uid', 'title', 'uzbek', 'arabic', 'types', 'author', 'description', 'data_items', 'number']
+        fields = ['uid', 'title', 'uzbek', 'arabic', 'types', 'author', 'description', 'data_items', 'number', 'date']
 
