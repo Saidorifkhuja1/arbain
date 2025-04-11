@@ -31,11 +31,13 @@ class SendVerificationCodeAPIView(APIView):
         data = serializer.validated_data
 
         email = data['email']
-
+        phone_number = data['phone_number']
         # Check if the email is already registered
         if User.objects.filter(email=email).exists():
             return Response({"error": "Bu email allaqachon ro\'yxatdan o\'tgan ."}, status=status.HTTP_400_BAD_REQUEST)
 
+        if User.objects.filter(phone_number=phone_number).exists():
+            return Response({"error": "Bu telefon  allaqachon ro\'yxatdan o\'tgan ."}, status=status.HTTP_400_BAD_REQUEST)
         # Generate verification code
         code = str(random.randint(100000, 999999))
 
@@ -44,7 +46,7 @@ class SendVerificationCodeAPIView(APIView):
         cache.set(cache_key, json.dumps({
             "name": data['name'],
             "last_name": data['last_name'],
-            # "phone_number": data['phone_number'],
+            "phone_number": data['phone_number'],
             "password": data['password'],
             "code": code
         }), timeout=300)
@@ -86,7 +88,7 @@ class VerifyCodeAPIView(APIView):
         user = User.objects.create(
             name=data['name'],
             last_name=data['last_name'],
-            # phone_number=data['phone_number'],
+            phone_number=data['phone_number'],
             email=email,
             is_verified=True
         )
