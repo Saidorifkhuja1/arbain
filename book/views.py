@@ -39,6 +39,7 @@ class BookListView(generics.ListAPIView):
 
 class BookListView1(generics.ListAPIView):
     serializer_class = BookSerializer1
+    pagination_class = CustomPageNumberPagination
 
     def get_queryset(self):
         """
